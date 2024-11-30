@@ -1,31 +1,52 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
 
 generator client {
   provider = "prisma-client-js"
 }
 
-datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
-}
- 
-// === Todo 1: add one to many relation === 
-model User {
-  id       Int    @id @default(autoincrement())
-  email    String @unique
-  name     String
-  password String
-  posts    Post[]
+// User roles to differentiate between admin and customer
+enum UserRole {
+  ADMIN
+  CUSTOMER
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  subject   String
-  detail    String
-  userId    Int
+// Game model to represent products in the Steam-like platform
+model Game {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  price       Float
+  imageUrl    String
+  category    String
+  developer   User     @relation(fields: [developerId], references: [id])
+  developerId String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  purchases   Purchase[]
+}
+
+// User model with extended authentication and role
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  password     String
+  role         UserRole  @default(CUSTOMER)
+  name         String?
+  games        Game[]
+  purchases    Purchase[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// Purchase model to track game purchases
+model Purchase {
+  id        String   @id @default(cuid())
   user      User     @relation(fields: [userId], references: [id])
-  likeScore Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  userId    String
+  game      Game     @relation(fields: [gameId], references: [id])
+  gameId    String
+  purchaseDate DateTime @default(now())
 }

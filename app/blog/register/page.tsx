@@ -11,7 +11,7 @@ export default function Register() {
     const [data, action] = useFormState(register, {})
 
     if (data.message) {
-        redirect("/blog")
+        redirect("/")
     }
 
     return (
