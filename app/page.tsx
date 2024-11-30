@@ -1,4 +1,3 @@
-// app/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -21,16 +20,11 @@ export default function HomePage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-blue-900 relative overflow-hidden">
-      {/* Background Decorations */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-600 to-blue-400 opacity-60 z-0"></div>
-      <div className="absolute top-0 left-0 w-64 h-64 bg-blue-700 opacity-30 rounded-full filter blur-3xl z-0"></div>
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-600 opacity-30 rounded-full filter blur-3xl z-0"></div>
-
+    <div className="fixed inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950 flex items-center justify-center">
       {/* Main Content */}
-      <div className="flex flex-row items-center justify-center w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden z-10">
+      <div className="flex flex-row items-center justify-center w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden">
         {/* Left Section: Image */}
-        <div className="flex-1 bg-gray-200">
+        <div className="flex-1">
           <img
             src="https://image.api.playstation.com/vulcan/ap/rnd/202405/2213/caf3b629a8afbc72a94ec15a568a898ac1845231398d77ac.png"
             alt="Game Image"
