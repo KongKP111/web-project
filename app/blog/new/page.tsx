@@ -1,43 +1,92 @@
-"use client"
-import { useFormState } from "react-dom"
-import post from "../_actions/post"
-import { redirect } from "next/navigation"
-import Link from "next/link"
-import SubmitButton from "../_component/SubmitButton"
+"use client";
 
-const style = 'border-2 border-black text-blue-800 px-2 py-1 rounded hover:bg-blue-100 focus-within:bg-blue-200'
+import { useState } from "react";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import SubmitButton from "../_component/SubmitButton";
+
+const style =
+  "border-2 border-black text-blue-800 px-2 py-1 rounded hover:bg-blue-100 focus-within:bg-blue-200";
 
 export default function New() {
-  
-  const [data, action] = useFormState(post, {})
+  const [formData, setFormData] = useState({
+    subject: "",
+    detail: "",
+  });
 
-  if (data.message) {
-    redirect("/blog")
-  }
+  const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setError(null);
+    setSuccessMessage(null);
+
+    try {
+      const response = await fetch("/api/post", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || "An error occurred.");
+      } else {
+        setSuccessMessage("Post created successfully!");
+        redirect("/blog");
+      }
+    } catch (err) {
+      setError("An unexpected error occurred. Please try again.");
+    }
+  };
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
   return (
-    <>
-      New
+    <div>
+      <h1>New Post</h1>
       <hr />
-      <form action={action} className="mt-4">
+      <form onSubmit={handleSubmit} className="mt-4">
         <div className="flex flex-col mb-2">
           <label htmlFor="subject">Subject</label>
-          <input className={style} type="subject" name="subject" id="subject" required />
-          {data.error?.subject && <div className="text-red-600">{data.error?.subject[0]}</div>}
+          <input
+            className={style}
+            type="text"
+            name="subject"
+            id="subject"
+            value={formData.subject}
+            onChange={handleChange}
+            required
+          />
         </div>
         <div className="flex flex-col mb-4">
           <label htmlFor="detail">Detail</label>
-          <textarea className={style}  name="detail" id="detail" required />
-          {data.error?.detail && <div className="text-red-600">{data.error?.detail[0]}</div>}
+          <textarea
+            className={style}
+            name="detail"
+            id="detail"
+            value={formData.detail}
+            onChange={handleChange}
+            required
+          />
         </div>
-        <div>
-          {data.error?.message && <div className="text-red-600">{data.error?.message}</div>}
-        </div>
-        <div>
-          {data.message ? <p>{data.message}</p> : <SubmitButton label="Post" />}
-        </div>
+        {error && <div className="text-red-600 mb-4">{error}</div>}
+        {successMessage && (
+          <div className="text-green-600 mb-4">{successMessage}</div>
+        )}
+        <SubmitButton label="Post" />
       </form>
-      <br /><hr />
+      <br />
+      <hr />
       <Link href="/blog">Back</Link>
-    </>
-  )
-} 
+    </div>
+  );
+}

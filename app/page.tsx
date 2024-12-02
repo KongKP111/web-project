@@ -1,3 +1,4 @@
+// app/page.tsx
 'use client';
 
 import { useState } from 'react';
@@ -15,16 +16,21 @@ export default function HomePage() {
     if (email === 'Admin1234@gmail.com' && password === '123456789') {
       router.push('/blog'); // Redirect to blog for Admin
     } else {
-      router.push('/blog-ui'); // Redirect to blog-ui for Customers
+      router.push('/blog'); // Redirect to blog-ui for Customers
     }
   };
 
   return (
-    <div className="fixed inset-0 bg-gradient-to-br from-blue-950 via-blue-900 to-blue-950 flex items-center justify-center">
+    <div className="flex items-center justify-center min-h-screen bg-blue-900 relative overflow-hidden">
+      {/* Background Decorations */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-800 via-blue-600 to-blue-400 opacity-60 z-0"></div>
+      <div className="absolute top-0 left-0 w-64 h-64 bg-blue-700 opacity-30 rounded-full filter blur-3xl z-0"></div>
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-blue-600 opacity-30 rounded-full filter blur-3xl z-0"></div>
+
       {/* Main Content */}
-      <div className="flex flex-row items-center justify-center w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden">
+      <div className="flex flex-row items-center justify-center w-full max-w-5xl bg-white shadow-lg rounded-lg overflow-hidden z-10">
         {/* Left Section: Image */}
-        <div className="flex-1">
+        <div className="flex-1 bg-gray-200">
           <img
             src="https://image.api.playstation.com/vulcan/ap/rnd/202405/2213/caf3b629a8afbc72a94ec15a568a898ac1845231398d77ac.png"
             alt="Game Image"

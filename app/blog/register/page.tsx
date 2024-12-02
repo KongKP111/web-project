@@ -7,7 +7,6 @@ import SubmitButton from "../_component/SubmitButton"
 import { style } from "../constants/style"
 
 export default function Register() {
-
     const [data, action] = useFormState(register, {})
 
     if (data.message) {
@@ -34,8 +33,6 @@ export default function Register() {
                     <input className={style} type="password" name="password" id="password" required />
                     {data.error?.password && <div className="text-red-600">{data.error?.password[0]}</div>}
                 </div>
-
-                //=== Todo 4: add new user with validation ===
                 <div>
                     {data.error?.message && <div className="text-red-600">{data.error?.message}</div>}
                 </div>
@@ -44,7 +41,7 @@ export default function Register() {
                 </div>
             </form>
             <br /><hr />
-            <Link href="/blog">Back</Link>
+            <Link href="/">Back</Link>
         </div>
     )
 }
