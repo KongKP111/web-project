@@ -10,9 +10,8 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  username  String   @default("") // กำหนดค่าเริ่มต้นเป็น string ว่าง
   password  String
-  role      String   @default("user")
+  name      String   // เพิ่มฟิลด์ name
 }
 
 

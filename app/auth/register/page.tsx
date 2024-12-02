@@ -1,81 +1,85 @@
 "use client";
-
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
-  const [email, setEmail] = useState("");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    name: "",
+    password: "",
+  });
 
-  const handleRegister = async () => {
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccessMessage("");
+
     try {
-      console.log("Sending data:", { email, username, password });
-  
-      const res = await fetch("/api/auth/register", {
+      const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, username, password }),
+        body: JSON.stringify(formData),
       });
-  
-      if (!res.ok) {
-        const contentType = res.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
-          const error = await res.json();
-          console.error("Registration failed:", error.message);
-          alert(`Registration failed: ${error.message}`);
-        } else if (res.status === 404) {
-          console.error("API not found");
-          alert("Registration failed: API not found.");
-        } else {
-          const errorText = await res.text();
-          console.error("Registration failed:", errorText);
-          alert("Registration failed. Please check the server logs.");
-        }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || "Registration failed.");
         return;
       }
-  
-      alert("Registration successful!");
-      router.push("/auth/login");
-    } catch (error) {
-      console.error("Error during registration:", error);
-      alert("An unexpected error occurred.");
-    }  
+
+      const data = await response.json();
+      setSuccessMessage(data.message);
+    } catch (err) {
+      console.error("Error during registration:", err);
+      setError("An unexpected error occurred.");
+    }
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="p-8 bg-white shadow-md rounded-md">
-        <h1 className="text-2xl mb-4">Register</h1>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className="border p-2 w-full mb-4"
-        />
-        <input
-          type="text"
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border p-2 w-full mb-4"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2 w-full mb-4"
-        />
-        <button
-          onClick={handleRegister}
-          className="w-full bg-green-500 text-white py-2 rounded"
-        >
-          Register
-        </button>
-      </div>
-    </main>
+    <div>
+      <h1>Register</h1>
+      {error && <div style={{ color: "red" }}>{error}</div>}
+      {successMessage && <div style={{ color: "green" }}>{successMessage}</div>}
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Email</label>
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Name</label>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <div>
+          <label>Password</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+          />
+        </div>
+        <button type="submit">Register</button>
+      </form>
+    </div>
   );
 }
