@@ -1,23 +1,18 @@
-import { NextRequest, NextResponse } from "next/server";
-import { updateSession } from "./utils/loginUser";
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
-  console.log("Middleware invoked")
-  const res = await updateSession(request)
-  if (res)
-    return res
-  else 
-    return NextResponse.redirect(new URL("/blog/login", request.url))
+export function middleware(request: NextRequest) {
+  const token = request.cookies.get('token')?.value;
 
-  // === Short coing style
-  // return (await updateSession(request)) || NextResponse.redirect(new URL("/blog/login", request.url));
+  // Protect admin routes
+  if (request.nextUrl.pathname.startsWith('/admin') && !token) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  return NextResponse.next();
 }
 
-// if path matches with matcher config, then it invoke middleware(request)
+// Apply middleware to specific routes
 export const config = {
-  matcher: '/blog/new/:path*',
-}
-
-// export const config = { 
-//   matcher: ['/blog/new/:path*', '/blog/:path*'],
-// }
+  matcher: ['/admin/:path*', '/cart/:path*'],
+};

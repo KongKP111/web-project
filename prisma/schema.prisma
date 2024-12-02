@@ -1,31 +1,32 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./dev.db"
 }
- 
-model Post {
-  id        Int      @id @default(autoincrement())
-  subject   String
-  detail    String
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  likeScore Int      @default(0) // Ensure this field exists
-}
-
 
 model User {
-  id       Int      @id @default(autoincrement())
-  email    String   @unique
-  name     String
-  password String
-  posts    Post[]
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  username  String   @default("") // กำหนดค่าเริ่มต้นเป็น string ว่าง
+  password  String
+  role      String   @default("user")
 }
+
+
+model Game {
+  id       Int    @id @default(autoincrement())
+  name     String
+  price    Float
+  imageUrl String
+}
+
+model CartItem {
+  id     Int  @id @default(autoincrement())
+  userId Int
+  gameId Int
+}
+
+
