@@ -1,15 +1,17 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation"; // Import the useRouter hook
 
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     email: "",
-    username: "",  // Change name to username here
+    username: "",
     password: "",
   });
 
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const router = useRouter(); // Initialize the router
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -36,6 +38,11 @@ export default function RegisterPage() {
 
       const data = await response.json();
       setSuccessMessage(data.message);
+
+      // Redirect to the homepage after successful registration
+      setTimeout(() => {
+        router.push("/"); // Redirect to the homepage
+      }, 2000); // Add a slight delay to show the success message
     } catch (err) {
       console.error("Error during registration:", err);
       setError("An unexpected error occurred.");
@@ -59,10 +66,10 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label>Username</label> {/* Update label here to match the formData */}
+          <label>Username</label>
           <input
             type="text"
-            name="username" 
+            name="username"
             value={formData.username}
             onChange={handleChange}
             required

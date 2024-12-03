@@ -65,7 +65,7 @@ export default function StorePage() {
       <header className="bg-white shadow-lg p-4 sticky top-0 z-50">
         <nav className="flex justify-between items-center container mx-auto">
           <div className="flex items-center space-x-6">
-            <Link href="/" className="text-xl font-bold text-gray-800 hover:text-blue-500 transition duration-300">
+            <Link href="/store" className="text-xl font-bold text-gray-800 hover:text-blue-500 transition duration-300">
               Home
             </Link>
             <Link href="#" className="text-lg text-gray-600 hover:text-blue-500 transition duration-300">
