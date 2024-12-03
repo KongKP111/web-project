@@ -1,45 +1,48 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import bcrypt from "bcrypt";
-import prisma from "../../../utils/db"; // Adjust the path if needed
+import prisma from "../../../utils/db";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  // Allow only POST method
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method not allowed." });
-  }
+  if (req.method === "POST") {
+    const { email, username, password, name } = req.body; // เพิ่ม name
 
-  try {
-    // Extract data from the request body
-    const { email, name, password } = req.body;
-
-    // Validate required fields
-    if (!email || !name || !password) {
+    if (!email || !username || !password || !name) {  // ตรวจสอบ name
       return res.status(400).json({ message: "All fields are required." });
     }
 
-    // Check if the user already exists
-    const existingUser = await prisma.user.findUnique({ where: { email } });
+    try {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
 
-    if (existingUser) {
-      return res.status(400).json({ message: "Email already in use." });
+      if (existingUser) {
+        return res.status(400).json({ message: "Email already in use." });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      await prisma.user.create({
+        data: {
+          email,
+          username,
+          password: hashedPassword,
+          name,  // ส่ง name ไปด้วย
+        },
+      });
+
+      // Save the user data in localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("email", email);
+        localStorage.setItem("username", username);
+        localStorage.setItem("password", password);  // Save password (not recommended for security reasons)
+      }
+
+      return res.status(201).json({ message: "User registered successfully." });
+    } catch (error) {
+      console.error("Error during registration:", error);
+      return res.status(500).json({ message: "Internal server error." });
     }
-
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Create a new user
-    const newUser = await prisma.user.create({
-      data: {
-        email,
-        name,
-        password: hashedPassword,
-      },
-    });
-
-    // Respond with success
-    return res.status(201).json({ message: "User registered successfully.", user: newUser });
-  } catch (error) {
-    console.error("Error during registration:", error);
-    return res.status(500).json({ message: "Internal server error." });
   }
+
+  return res.status(405).json({ message: "Method not allowed." });
 }

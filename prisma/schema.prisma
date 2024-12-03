@@ -10,9 +10,12 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
+  username  String   @default("") 
   password  String
-  name      String   // เพิ่มฟิลด์ name
+  name      String
+  role      String   @default("user") // Make sure role exists
 }
+
 
 
 model Game {
@@ -27,5 +30,4 @@ model CartItem {
   userId Int
   gameId Int
 }
-
 
