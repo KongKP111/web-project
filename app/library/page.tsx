@@ -2,44 +2,42 @@
 
 import { useEffect, useState } from "react";
 
+interface Purchase {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
+
 export default function LibraryPage() {
-  const [userInfo, setUserInfo] = useState({
-    email: "",
-    username: "",
-    password: "",
-    previousPurchases: [] as string[], // Example, replace with actual data
-  });
+  const [purchases, setPurchases] = useState<Purchase[]>([]);
+  const [user, setUser] = useState({ email: "", username: "" });
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedEmail = localStorage.getItem("email");
-      const savedUsername = localStorage.getItem("username");
-      const savedPassword = localStorage.getItem("password");
+    // Load purchases from localStorage
+    const savedPurchases = JSON.parse(localStorage.getItem("purchases") || "[]");
+    setPurchases(savedPurchases);
 
-      if (savedEmail && savedUsername && savedPassword) {
-        setUserInfo({
-          email: savedEmail,
-          username: savedUsername,
-          password: savedPassword,
-          previousPurchases: ["Game 1", "Game 2", "Game 3"], // Mock data, replace with actual purchases
-        });
-      }
-    }
+    // Load user details
+    const email = localStorage.getItem("email") || "Not logged in";
+    const username = localStorage.getItem("username") || "Guest";
+    setUser({ email, username });
   }, []);
 
   return (
     <main className="min-h-screen bg-gray-50 p-8">
       <h1 className="text-4xl font-extrabold text-gray-900 mb-8">My Library</h1>
-      <div className="bg-white p-6 rounded-lg shadow-xl">
-        <h2 className="text-2xl font-semibold text-gray-800 mb-4">Account Info</h2>
-        <p><strong>Email:</strong> {userInfo.email}</p>
-        <p><strong>Username:</strong> {userInfo.username}</p>
-        <p><strong>Password:</strong> {userInfo.password}</p>
-
-        <h3 className="mt-6 text-xl font-semibold text-gray-800 mb-4">Previous Purchases</h3>
+      <div>
+        <p>Email: {user.email}</p>
+        <p>Username: {user.username}</p>
+        <h2 className="text-2xl font-bold mt-4">Previous Purchases</h2>
         <ul>
-          {userInfo.previousPurchases.map((game, index) => (
-            <li key={index} className="text-lg text-gray-600">{game}</li>
+          {purchases.map((purchase, index) => (
+            <li key={index} className="border-b py-2">
+              <p>{purchase.name}</p>
+              <p>Quantity: {purchase.quantity}</p>
+              <p>Price: ${(purchase.price * (purchase.quantity || 1)).toFixed(2)}</p>
+            </li>
           ))}
         </ul>
       </div>

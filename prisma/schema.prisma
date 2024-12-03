@@ -31,4 +31,14 @@ model CartItem {
   gameId Int
 }
 
+model Purchase {
+  id       Int      @id @default(autoincrement())
+  userId   Int
+  user     User     @relation(fields: [userId], references: [id])
+  name     String
+  price    Float
+  quantity Int
+  createdAt DateTime @default(now())
+}
+
 
