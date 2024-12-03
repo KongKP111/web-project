@@ -10,89 +10,90 @@ interface Post {
 
 export default function AdminPage() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
+  const [newPost, setNewPost] = useState({ title: "", content: "" });
 
-  // Fetch posts from API
   useEffect(() => {
-    const fetchPosts = async () => {
-      const res = await fetch("/api/admin/posts");
-      const data: Post[] = await res.json();
-      setPosts(data);
-    };
-    fetchPosts();
+    // Fetch posts
+    fetch("/api/posts")
+      .then((res) => res.json())
+      .then((data) => setPosts(data))
+      .catch((err) => console.error("Error fetching posts:", err));
   }, []);
 
-  // Add new post
-  const addPost = async () => {
-    const res = await fetch("/api/admin/posts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, content }),
-    });
-    if (res.ok) {
-      const newPost: Post = await res.json();
-      setPosts((prevPosts) => [...prevPosts, newPost]);
-      setTitle(""); // Reset title
-      setContent(""); // Reset content
+  const handleAddPost = async () => {
+    try {
+      const res = await fetch("/api/posts/add", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newPost),
+      });
+
+      if (res.ok) {
+        const post = await res.json();
+        setPosts([...posts, post]);
+        setNewPost({ title: "", content: "" });
+      } else {
+        alert("Failed to add post.");
+      }
+    } catch (error) {
+      console.error("Error adding post:", error);
     }
   };
 
-  // Delete a post
-  const deletePost = async (id: number) => {
-    await fetch(`/api/admin/posts/${id}`, { method: "DELETE" });
-    setPosts((prevPosts) => prevPosts.filter((post) => post.id !== id));
+  const handleDeletePost = async (id: number) => {
+    try {
+      const res = await fetch(`/api/posts/delete/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setPosts(posts.filter((post) => post.id !== id));
+      } else {
+        alert("Failed to delete post.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-gray-100">
-      <header className="bg-white p-4 shadow-md">
-        <h1 className="text-2xl font-bold">Admin Panel</h1>
-      </header>
-      <section className="p-8">
-        <h2 className="text-xl font-semibold mb-4">Add New Post</h2>
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className="border p-2 w-full mb-2"
-          />
-          <textarea
-            placeholder="Content"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            className="border p-2 w-full mb-2"
-          />
-          <button
-            onClick={addPost}
-            className="bg-green-500 text-white px-4 py-2 rounded"
-          >
-            Add Post
-          </button>
-        </div>
-        <h2 className="text-xl font-semibold mb-4">Manage Posts</h2>
-        <ul>
-          {posts.map((post) => (
-            <li
-              key={post.id}
-              className="flex justify-between items-center mb-2"
+    <main className="min-h-screen bg-gray-50 p-8">
+      <h1 className="text-4xl font-extrabold text-gray-900 mb-8">Admin Panel</h1>
+      <div>
+        <h2 className="text-2xl font-bold mb-4">Add New Post</h2>
+        <input
+          type="text"
+          placeholder="Title"
+          value={newPost.title}
+          onChange={(e) => setNewPost({ ...newPost, title: e.target.value })}
+          className="border p-2 mb-2 w-full"
+        />
+        <textarea
+          placeholder="Content"
+          value={newPost.content}
+          onChange={(e) => setNewPost({ ...newPost, content: e.target.value })}
+          className="border p-2 mb-2 w-full"
+        ></textarea>
+        <button
+          onClick={handleAddPost}
+          className="bg-blue-500 text-white py-2 px-4 rounded"
+        >
+          Add Post
+        </button>
+      </div>
+
+      <h2 className="text-2xl font-bold mt-8">All Posts</h2>
+      <ul className="mt-4">
+        {posts.map((post) => (
+          <li key={post.id} className="border-b py-4">
+            <h3 className="font-semibold">{post.title}</h3>
+            <p>{post.content}</p>
+            <button
+              onClick={() => handleDeletePost(post.id)}
+              className="mt-2 text-red-500"
             >
-              <div>
-                <h3 className="font-bold">{post.title}</h3>
-                <p>{post.content}</p>
-              </div>
-              <button
-                onClick={() => deletePost(post.id)}
-                className="text-red-500"
-              >
-                Delete
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+              Delete
+            </button>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }

@@ -16,7 +16,11 @@ model User {
   role      String   @default("user") // Make sure role exists
 }
 
-
+model Post {
+  id      Int    @id @default(autoincrement())
+  title   String
+  content String
+}
 
 model Game {
   id       Int    @id @default(autoincrement())
@@ -31,15 +35,6 @@ model CartItem {
   gameId Int
 }
 
-model Purchase {
-  id       Int      @id @default(autoincrement())
-  userId   Int
-  user     User     @relation(fields: [userId], references: [id])
-  name     String
-  price    Float
-  quantity Int
-  createdAt DateTime @default(now())
-}
 
 
 
