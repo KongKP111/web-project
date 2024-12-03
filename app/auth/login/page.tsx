@@ -17,13 +17,17 @@ export default function LoginPage() {
 
     if (res.ok) {
       const data = await res.json();
+      localStorage.setItem("username", data.username);
+      localStorage.setItem("email", data.email);
+      localStorage.setItem("role", data.role);
+
       if (data.role === "admin") {
         router.push("/admin");
       } else {
         router.push("/store");
       }
     } else {
-      alert("Login failed.");
+      alert("Login failed. Please check your credentials.");
     }
   };
 

@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function RegisterPage() {
   const [formData, setFormData] = useState({
     email: "",
-    name: "",
+    username: "",  // Change name to username here
     password: "",
   });
 
@@ -59,11 +59,11 @@ export default function RegisterPage() {
           />
         </div>
         <div>
-          <label>Name</label>
+          <label>Username</label> {/* Update label here to match the formData */}
           <input
             type="text"
-            name="name"
-            value={formData.name}
+            name="username" 
+            value={formData.username}
             onChange={handleChange}
             required
           />

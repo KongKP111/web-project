@@ -14,7 +14,7 @@ export default function StorePage() {
   const [games, setGames] = useState<Game[]>([]);
   const [cart, setCart] = useState<Game[]>([]);
   const [username, setUsername] = useState<string>("Guest");
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);  // Manage dropdown visibility
+  const [showDropdown, setShowDropdown] = useState<boolean>(false); // Properly declared
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -53,11 +53,11 @@ export default function StorePage() {
     localStorage.removeItem("cart");
     localStorage.removeItem("username");
     alert("Logging out... Redirecting to Home");
-    window.location.href = "/"; 
+    window.location.href = "/";
   };
 
   const toggleDropdown = () => {
-    setShowDropdown((prevState) => !prevState);
+    setShowDropdown((prev) => !prev);
   };
 
   return (
@@ -80,10 +80,7 @@ export default function StorePage() {
               )}
             </Link>
             <div className="relative">
-              <button
-                className="text-lg text-gray-800"
-                onClick={toggleDropdown}
-              >
+              <button className="text-lg text-gray-800" onClick={toggleDropdown}>
                 Hello, {username}
               </button>
               {showDropdown && (
@@ -94,10 +91,7 @@ export default function StorePage() {
                   <Link href="/previous-purchases" className="block mb-2 text-sm text-gray-800 hover:text-blue-500">
                     Previous Purchases
                   </Link>
-                  <button
-                    className="w-full text-red-500 hover:text-red-700"
-                    onClick={handleLogout}
-                  >
+                  <button className="w-full text-red-500 hover:text-red-700" onClick={handleLogout}>
                     Logout
                   </button>
                 </div>
@@ -113,11 +107,7 @@ export default function StorePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {games.map((game) => (
             <div key={game.id} className="bg-white shadow-xl rounded-lg overflow-hidden transition-transform transform hover:scale-105">
-              <img
-                src={game.imageUrl}
-                alt={game.name}
-                className="w-full h-64 object-cover rounded-t-lg"
-              />
+              <img src={game.imageUrl} alt={game.name} className="w-full h-64 object-cover rounded-t-lg" />
               <div className="p-4">
                 <h2 className="text-xl font-semibold text-gray-800 mb-2">{game.name}</h2>
                 <p className="text-lg text-gray-600 mb-4">Price: ${game.price}</p>
