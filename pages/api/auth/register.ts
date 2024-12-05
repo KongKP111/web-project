@@ -26,11 +26,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await prisma.user.create({
         data: {
           email,
-          username,
+          username, // ใช้ username แทน name
           password: hashedPassword,
-          name: name || username, // Use `username` as fallback for `name`
+          role: "user",
         },
       });
+      
 
       return res.status(201).json({ message: "User registered successfully." });
     } catch (error) {
